@@ -14,7 +14,7 @@ class CreateAdminColumn extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_admin');
+            $table->boolean('is_admin')->default(false);
         });
     }
 
@@ -25,7 +25,7 @@ class CreateAdminColumn extends Migration
      */
     public function down()
     {
-        Schema::table('categories', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('is_admin');
         });
 
