@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\UserRequest;
-use App\Models\User;
+use App\Http\Requests\TrainingRequest;
+use App\Models\Training;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
@@ -13,11 +13,11 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class UserCrudController
+ * Class TrainingCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class UserCrudController extends CrudController
+class TrainingCrudController extends CrudController
 {
     use ListOperation;
     use CreateOperation;
@@ -32,9 +32,9 @@ class UserCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(User::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
-        CRUD::setEntityNameStrings('user', 'users');
+        CRUD::setModel(Training::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/training');
+        CRUD::setEntityNameStrings('training', 'trainings');
     }
 
     /**
@@ -46,19 +46,18 @@ class UserCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('id');
-        CRUD::column('name');
-        CRUD::column('email');
+//        CRUD::column('length');
         CRUD::addColumn([
-            'name'      => 'trainings',
-            'type'      => 'relationship_count',
-            'label'     => 'Trainings',
-            'suffix'    => ' trainings'
+            'name'         => 'length',
+            'type'         => 'timelength',
+            'label'        => 'Training length',
         ]);
         CRUD::addColumn([
-            'name'      => 'created_at',
-            'type'      => 'datetime',
-            'label'     => 'Created At'
+            'name'         => 'user',
+            'type'         => 'relationship',
+            'label'        => 'User',
         ]);
+        CRUD::column('created_at');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -75,11 +74,10 @@ class UserCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(UserRequest::class);
+        CRUD::setValidation(TrainingRequest::class);
 
-        CRUD::field('name');
-        CRUD::field('email');
-        CRUD::field('password')->type('password');
+        CRUD::field('length');
+        CRUD::field('user_id');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
@@ -96,25 +94,6 @@ class UserCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-        CRUD::setValidation(UserRequest::class);
-
-        CRUD::field('name');
-        CRUD::field('email');
-    }
-
-    protected function setupShowOperation()
-    {
-        $this->crud->set('show.setFromDb', false);
-
-        $this->crud->addColumn('id');
-        $this->crud->addColumn('name');
-        $this->crud->addColumn('email');
-        $this->crud->addColumn('created_at');
-        $this->crud->addColumn([
-            'name'      => 'trainings',
-            'type'      => 'relationship_count',
-            'label'     => 'Trainings',
-            'suffix'    => ' trainings'
-        ]);
+        $this->setupCreateOperation();
     }
 }
