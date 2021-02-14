@@ -9,6 +9,8 @@ class Training extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['length','user_id'];
+
     protected $primaryKey = 'training_id';
 
     public function user()
