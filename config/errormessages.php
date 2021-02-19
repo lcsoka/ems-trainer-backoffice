@@ -15,5 +15,6 @@ return [
         'ERROR_NO_AUTHENTICATED_USER_FOUND' => 'No authenticated user found!',
         'ERROR_INVITATION_FAILED_USER_EXISTS' => 'User already exists with the given email address!',
         'ERROR_USER_NOT_FOUND' => 'User not found!',
+        'UNAUTHORIZED'=> 'Unauthorized!'
     ]
 ];
