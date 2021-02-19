@@ -15,7 +15,13 @@ class UserController extends Controller
     {
         $user = $request->user();
         $trainings = Training::all()->where('user_id',$user->id);
-
         return $this->success(['user' => $user, 'trainings' => $trainings]);
     }
+
+    public function test(Request $request)
+    {
+        sleep(5);
+        return $this->success([]);
+    }
+
 }

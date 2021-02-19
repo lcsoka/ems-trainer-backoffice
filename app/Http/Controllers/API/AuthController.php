@@ -8,6 +8,7 @@ use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -32,13 +33,18 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $loginData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        if (!Auth::attempt($loginData)) {
-            return $this->error('Invalid email or password.', 401);
+        if ($validator->fails()) {
+            $this->addValidatorErrorMessages($validator->errors(), 400);
+            return $this->generateJSONResponse();
+        }
+
+        if (!Auth::attempt($request->all())) {
+            return $this->error([["error" => 'Invalid email or password.']], 400);
         }
 
         $accessToken = auth()->user()->createToken('authToken')->plainTextToken;
@@ -49,6 +55,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return $this->success(null,'Logged out.');
+        return $this->success(null, 'Logged out.');
     }
 }
