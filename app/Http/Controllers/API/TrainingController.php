@@ -2,31 +2,39 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\Training;
-use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class TrainingController extends Controller
+class TrainingController extends BaseApiController
 {
-    use ApiResponder;
-
     public function trainings(Request $request)
     {
         $user = $request->user();
         $trainings = Training::all()->where('user_id', $user->id);
-
-        return $this->success(['trainings' => $trainings]);
+        $this->response->addItem('trainings', $trainings);
+        return $this->response->generateJSONResponse();
     }
 
     public function create(Request $request)
     {
-        $validateData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'length' => 'required|integer|min:0'
         ]);
 
-        $validateData['user_id'] = $request->user()->id;
-        $training = Training::create($validateData);
-        return $this->success(['training' => $training], 'Training was saved.', 201);
+        if ($validator->fails()) {
+            $this->response->addValidatorErrorMessages($validator->errors(), 400);
+            return $this->response->generateJSONResponse();
+        }
+
+        $data = [
+            'length' => $request->input('length'),
+            'user_id' => $request->user()->id
+        ];
+
+        $training = Training::create($data);
+
+        $this->response->addItem('training', $training);
+        return $this->response->generateJSONResponse();
     }
 }

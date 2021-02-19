@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\Training;
-use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class UserController extends BaseApiController
 {
-    use ApiResponder;
 
     public function me(Request $request)
     {
         $user = $request->user();
-        $trainings = Training::all()->where('user_id',$user->id);
-        return $this->success(['user' => $user, 'trainings' => $trainings]);
+        $trainings = Training::all()->where('user_id', $user->id);
+        $this->response->addItem('user', $user);
+        $this->response->addItem('trainings', $trainings);
+        return $this->response->generateJSONResponse();
     }
 
     public function test(Request $request)
     {
         sleep(5);
-        return $this->success([]);
+        return $this->response->generateJSONResponse();
     }
 
 }
