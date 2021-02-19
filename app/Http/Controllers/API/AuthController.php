@@ -2,33 +2,42 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class AuthController extends Controller
+class AuthController extends BaseApiController
 {
-    use ApiResponder;
 
     public function register(Request $request)
     {
-        $validateData = $request->validate([
+        $validator = Validator::make($request->all(),[
             'name' => 'required|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|confirmed',
         ]);
 
-        $validateData["password"] = Hash::make($validateData["password"]);
+        if ($validator->fails()) {
+            $this->response->addValidatorErrorMessages($validator->errors(), 400);
+            return $this->response->generateJSONResponse();
+        }
 
-        $user = User::create($validateData);
+        $data = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => Hash::make($request["password"])
+        ];
+
+        $user = User::create($data);
 
         $accessToken = $user->createToken('authToken')->plainTextToken;
 
-        return $this->success(['user' => $user, 'access_token' => $accessToken], 'User was created.', 201);
+        $this->response->addItem('user', $user);
+        $this->response->addItem('access_token', $accessToken);
+        $this->response->setStatusCode(201);
+        return $this->response->generateJSONResponse();
     }
 
     public function login(Request $request)
@@ -39,22 +48,26 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->addValidatorErrorMessages($validator->errors(), 400);
-            return $this->generateJSONResponse();
+            $this->response->addValidatorErrorMessages($validator->errors(), 400);
+            return $this->response->generateJSONResponse();
         }
 
         if (!Auth::attempt($request->all())) {
-            return $this->error([["error" => 'Invalid email or password.']], 400);
+            $this->response->addErrorMessageWithErrorCode('ERROR_INVALID_USER_CREDENTIALS', 400);
+            return $this->response->generateJSONResponse();
+
         }
 
         $accessToken = auth()->user()->createToken('authToken')->plainTextToken;
+        $this->response->addItem('user', auth()->user());
+        $this->response->addItem('access_token', $accessToken);
 
-        return $this->success(['user' => auth()->user(), 'access_token' => $accessToken]);
+        return $this->response->generateJSONResponse();
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return $this->success(null, 'Logged out.');
+        return $this->response->generateJSONResponse();
     }
 }

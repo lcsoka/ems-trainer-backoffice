@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Helpers;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,25 +88,11 @@ class ApiResponder
     {
         if (count($this->getErrorMessages()) > 0) {
             $this->addItem('errors', $this->getErrorMessages(), false);
-            if (!isset($this->result['success'])) {
-                $this->addItem('success', false, false);
-            }
 
             if (!is_null($this->backtrace)) {
                 $this->addItem('backtrace', $this->backtrace);
             }
-        } else {
-            if (!isset($this->result['success'])) {
-                $this->addItem('success', true, false);
-            }
         }
-
-        foreach ($this->permanentItems as $key => $value) {
-            $this->addItem($key, $value);
-        }
-
-        $this->addItem('response_code', $this->getStatusCode(), false);
-
         return $this->getResult();
     }
 
@@ -156,6 +142,21 @@ class ApiResponder
         return $this;
     }
 
+    public function addValidatorErrorMessages($messages, $statusCode = null) {
+        $this->setStatusCode(is_null($statusCode) ? '400' : $statusCode);
+
+        foreach ($messages->toArray() as $messageKey => $messageValues) {
+            if (is_array($messageValues)) {
+                foreach ($messageValues as $messageValue) {
+                    $this->addErrorMessageWithErrorCode('ERROR_INVALID_FORM_DATA', null, $messageValue);
+                }
+            } else {
+                $this->addErrorMessageWithErrorCode('ERROR_INVALID_FORM_DATA', null, $messageValues);
+            }
+        }
+
+        return $this;
+    }
 
     protected function addValidatorErrors($messages, $statusCode = null)
     {
