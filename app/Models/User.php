@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Traits\Slugify;
+use Assada\Achievements\Achiever;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,6 +15,8 @@ class User extends Authenticatable
 {
     use CrudTrait;
     use HasApiTokens, HasFactory, Notifiable;
+    use Achiever;
+    use Slugify;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +51,9 @@ class User extends Authenticatable
     ];
 
     protected $guarded = ['id','password'];
+
+
+    public $slugify = 'name';
 
     public function trainings()
     {

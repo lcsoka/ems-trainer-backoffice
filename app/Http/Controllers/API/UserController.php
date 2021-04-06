@@ -11,8 +11,9 @@ class UserController extends BaseApiController
     public function me(Request $request)
     {
         $user = $request->user();
-        $trainings = Training::all()->where('user_id', $user->id);
+        $trainings = Training::where('user_id', $user->id)->get()->toArray();
         $this->response->addItem('user', $user);
+        $this->response->addItem('achievements', $user->achievements()->with(['details'])->get()->map->details);
         $this->response->addItem('trainings', $trainings);
         return $this->response->generateJSONResponse();
     }

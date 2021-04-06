@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Achievements\FirstCardioTraining;
 use App\Models\Training;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,8 @@ class TrainingController extends BaseApiController
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'length' => 'required|integer|min:0'
+            'length' => 'required|integer|min:0',
+            'training_mode' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -27,12 +29,20 @@ class TrainingController extends BaseApiController
             return $this->response->generateJSONResponse();
         }
 
+        $user = $request->user();
+        $trainingMode = $request->input('training_mode');
+
         $data = [
             'length' => $request->input('length'),
-            'user_id' => $request->user()->id
+            'training_mode' => $trainingMode,
+            'user_id' => $user->id
         ];
 
         $training = Training::create($data);
+
+        if($trainingMode == 'cardio') {
+            $user->unlock(new FirstCardioTraining());
+        }
 
         $this->response->addItem('training', $training);
         return $this->response->generateJSONResponse();

@@ -11,7 +11,7 @@ class Training extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ['length','user_id'];
+    protected $fillable = ['length','user_id', 'training_mode'];
 
     protected $primaryKey = 'id';
 
