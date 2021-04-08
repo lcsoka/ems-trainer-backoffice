@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Achievements\FirstCardioTraining;
+use App\Achievements\FirstMassageTraining;
+use App\Achievements\FirstStrengthTraining;
 use App\Models\Training;
 use App\Models\TrainingValues;
 use Illuminate\Http\Request;
@@ -56,6 +58,10 @@ class TrainingController extends BaseApiController
 
         if($trainingMode == 'cardio') {
             $user->unlock(new FirstCardioTraining());
+        } elseif ($trainingMode == 'strength') {
+            $user->unlock(new FirstStrengthTraining());
+        } elseif ($trainingMode == 'massage') {
+            $user->unlock(new FirstMassageTraining());
         }
 
         $this->response->addItem('training', $training);
