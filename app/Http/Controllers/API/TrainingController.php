@@ -48,14 +48,14 @@ class TrainingController extends BaseApiController
         $training = Training::create($data);
 
         $values = $request->input('training_values');
-        $trainingValuesJson = json_decode($values);
+        $trainingValuesJson = $values;
         if($trainingValuesJson != null) {
             $trainingValuesData = [
                 'training_id' => $training->id,
-                'values' => $values
+                'values' => json_encode($values)
             ];
-            $trainingValues = TrainingValues::create($trainingValuesData);
-            $this->response->addItem('trainingValues', $trainingValues);
+            TrainingValues::create($trainingValuesData);
+//            $this->response->addItem('trainingValues', $trainingValues);
         }
 
 
@@ -67,7 +67,15 @@ class TrainingController extends BaseApiController
             $user->unlock(new FirstMassageTraining());
         }
 
-        $this->response->addItem('training', $training);
+        $this->response->addItem('trainings', $training->with('trainingValues')->get()->map(function ($training) {
+            $data = $training;
+            $originalValues = $data['trainingValues'];
+            if ($originalValues != null) {
+                $values= json_decode($originalValues->values);
+                $training['training_values'] = $values;
+            }
+            return $training;
+        }));
 
         return $this->response->generateJSONResponse();
     }
