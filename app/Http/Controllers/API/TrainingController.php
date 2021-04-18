@@ -25,6 +25,7 @@ class TrainingController extends BaseApiController
         $validator = Validator::make($request->all(), [
             'length' => 'required|integer|min:0',
             'training_mode' => 'required',
+            'date' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -35,11 +36,13 @@ class TrainingController extends BaseApiController
         $user = $request->user();
         $trainingMode = $request->input('training_mode');
 
+        $date = date("Y-m-d H:i:s", $request->input('date'));
 
         $data = [
             'length' => $request->input('length'),
             'training_mode' => $trainingMode,
-            'user_id' => $user->id
+            'user_id' => $user->id,
+            'date' => $date,
         ];
 
         $training = Training::create($data);

@@ -11,13 +11,14 @@ class Training extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ['length', 'user_id', 'training_mode'];
+    protected $fillable = ['length', 'user_id', 'training_mode', 'date'];
 
     protected $hidden = ['training_values'];
 
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'date'
     ];
 
     protected $primaryKey = 'id';
