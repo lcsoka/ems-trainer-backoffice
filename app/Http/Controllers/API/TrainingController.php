@@ -67,7 +67,7 @@ class TrainingController extends BaseApiController
             $user->unlock(new FirstMassageTraining());
         }
 
-        $this->response->addItem('trainings', $training->with('trainingValues')->get()->map(function ($training) {
+        $this->response->addItem('trainings', $user->trainings()->with('trainingValues')->get()->map(function ($training) {
             $data = $training;
             $originalValues = $data['trainingValues'];
             if ($originalValues != null) {

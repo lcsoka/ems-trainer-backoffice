@@ -21,7 +21,7 @@ class UserController extends BaseApiController
             return $training;
         });
         $this->response->addItem('user', $user);
-        $this->response->addItem('achievements', $user->achievements()->with(['details'])->get()->map->details);
+        $this->response->addItem('achievements', $user->achievements()->whereNotNull('unlocked_at')->with(['details'])->get()->map->details);
         $this->response->addItem('trainings', $trainings);
         return $this->response->generateJSONResponse();
     }
