@@ -3,13 +3,13 @@
 @php
     $widgets['before_content'][] = [
         'type'        => 'jumbotron',
-        'heading'     => trans('backpack::base.welcome'),
-        'content'     => trans('backpack::base.use_sidebar'),
+        'heading'     => 'Welcome to the EMS Backoffice!',
+        'content'     => 'You can manage the users and their trainings on this site. Just use the sidebar to the left to navigate to the corresponding page.',
         'button_link' => backpack_url('logout'),
         'button_text' => trans('backpack::base.logout'),
     ];
 @endphp
 
 @section('content')
-    <p>Your custom HTML can live here</p>
+
 @endsection
